@@ -36,7 +36,7 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return Optional.ofNullable(session.get(ShoppingCart.class, user.getId()));
         } catch (Exception e) {
-            throw new DataProcessingException("Can't get shopping cart", e);
+            throw new DataProcessingException("Can't get shopping cart by user " + user, e);
         }
     }
 
@@ -55,7 +55,7 @@ public class ShoppingCartDaoImpl implements ShoppingCartDao {
             }
             throw new DataProcessingException("Can't update shopping cart" + shoppingCart, e);
         } finally {
-            if (transaction != null) {
+            if (session != null) {
                 session.close();
             }
         }

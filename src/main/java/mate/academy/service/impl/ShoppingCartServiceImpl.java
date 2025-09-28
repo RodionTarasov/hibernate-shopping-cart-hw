@@ -1,6 +1,7 @@
 package mate.academy.service.impl;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import mate.academy.dao.ShoppingCartDao;
 import mate.academy.dao.TicketDao;
 import mate.academy.lib.Service;
@@ -17,8 +18,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void addSession(MovieSession movieSession, User user) {
-        ShoppingCart shoppingCart = shoppingCartDao.getByUser(user)
-                .orElseThrow(() -> new RuntimeException("Cart not found for user " + user));
+        Optional<ShoppingCart> optionalCart = shoppingCartDao.getByUser(user);
+        ShoppingCart shoppingCart;
+        if (optionalCart.isPresent()) {
+            shoppingCart = optionalCart.get();
+        } else {
+            registerNewShoppingCart(user);
+            shoppingCart = shoppingCartDao.getByUser(user).get();
+        }
         if (shoppingCart.getTickets() == null) {
             shoppingCart.setTickets(new ArrayList<>());
         }
